@@ -2544,7 +2544,10 @@ func withJSClusterAndStream(t *testing.T, clusterName string, size int, stream *
 		timeout := time.Now().Add(10 * time.Second)
 		for time.Now().Before(timeout) {
 			_, err = jsm.AddStream(stream)
-			if err != nil {
+			if err != nil && err.Error() == "stream name already in use" {
+				// Great, the stream was created.
+				break
+			} else if err != nil {
 				t.Logf("WARN: Got error while trying to create stream: %v", err)
 				// Backoff for a bit until cluster and resources ready.
 				time.Sleep(500 * time.Millisecond)
